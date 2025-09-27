@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue Drawing App Modal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Add this in your <head> -->
+  <link href="https://fonts.googleapis.com/css?family=SF+Pro+Display|Roboto|Permanent+Marker&display=swap" rel="stylesheet">
+  <!-- Add SF Pro font from Google Fonts or use system font stack -->
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Add these font links in your <head> if not already present -->
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@500&family=Gloria+Hallelujah&family=Caveat:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+  .share-assets-section {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: nowrap;
+    min-width: 320px;
+  }
+  @media (max-width: 500px) {
+    .share-assets-section {
+      gap: 16px;
+      min-width: 0;
+    }
+    .share-assets-section > div {
+      width: 45vw;
+      min-width: 120px;
+      max-width: 160px;
+    }
+  }
+  .share-assets-section {
+  margin-top: 10rem !important;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+  }
+
+
+/* button submit */
+.upload-section {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-btn {
+  font-family: 'Gloria Hallelujah', cursive;
+  font-size: 1.2rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+ /* Header Section */
+    /* Header layout: image left, text right */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: auto;
+      flex: 1;
+    }
+    .header-anniversary {
+      margin: 0 2vw 0 0;
+      display: block;
+    }
+    .header-text {
+      flex: 1;
+      font-size: clamp(22px, 4vw, 20px);
+      line-height: 1.4;
+      color: white;
+      font-family: 'SF Pro Display', sans-serif;
+      min-width: 120px;
+      max-width: 600px;
+      margin: 0;
+      word-break: break-word;
+    }
+    @media (max-width: 900px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+      .header-left {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+      .header-anniversary {
+        margin: 0 auto 12px auto;
+      }
+      .header-text {
+        font-size: clamp(18px, 5vw, 22px);
+        margin-top: 10px;
+        max-width: 100%;
+        min-width: 0;
+        padding: 0 2vw;
+      }
+    }
+    @media (max-width: 600px) {
+  .header-logo {
+    max-width: 32vw;
+    min-width: 28px;
+    margin-right: 2vw;
+  }
+  .header-anniversary {
+    max-width: 48vw;
+    min-width: 40px;
+    margin: 0 2vw 0 0;
+  }
+  .header-text {
+    font-size: clamp(15px, 6vw, 20px);
+    padding: 0 3vw;
+    max-width: 100vw;
+    min-width: 0;
+  }
+}
+
+    /* Grid Section */
+    .wall {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 20px;
+  margin-bottom: 10rem;
+    }
+
+    .card {
+      position: relative;
+      aspect-ratio: 1 / 1; /* perfect square */
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: 'Gloria Hallelujah', cursive;
+      font-size: 1.2rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .card img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* keeps aspect ratio */
+}
+
+    .card:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .add-btn {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    /* Responsive Fix */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .header-left {
+        justify-content: center;
+      }
+
+      .header-text {
+        margin-top: 10px;
+      }
+    }
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      animation: overlayFade 0.3s ease;
+    }
+    @keyframes overlayFade {
+      from { background: rgba(0,0,0,0); }
+      to   { background: rgba(0,0,0,0.5); }
+    }
+
+    /* Modal Content */
+    .modal-content {
+      position: relative;
+      background: transparent;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      width: 95%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      position: absolute;
+      top: 10px; right: 15px;
+      cursor: pointer;
+    }
+
+    /* Fade + Slide Transition */
+    .fade-slide-enter-active,
+    .fade-slide-leave-active {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .fade-slide-enter,
+    .fade-slide-leave-to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    /* Drawing App Styling */
+    #drawing-app * {
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+    .drawing-section {
+      position: relative;
+      display: block; /* Changed from flex */
+      width: 720px;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0; /* Remove horizontal padding */
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 720px;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      border: 2px solid #fff;      /* White 2px outline */
+      background-color: transparent; /* Transparent background */
+      background-image: url('assets/bgcanvas.png');
+      touch-action: none;
+      position: relative;
+      z-index: 1;
+    }
+    .tools {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto 10px auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      background: #f5f5f5;
+      padding: 10px;
+    }
+    .tools.toolbar-bottom {
+      position: relative;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-width: 720px;
+      margin: 16px auto 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      background: transparent;
+      padding: 10px 0 10px 0;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+    }
+    .tools.toolbar-bottom img {
+      width: 32px;
+      height: 32px;
+      display: block;
+      margin: 0 auto;
+    }
+    .tools img,
+    .tools button {
+    transition: transform 0.2s ease;
+    }
+    .tools img:hover,
+    .tools button:hover {
+     transform: scale(1.15);
+    }
+    .tools img.active,
+    .tools button.active {
+      transform: scale(1.15);
+    }
+    .palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+    }
+    .palette div {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .pen {
+      cursor: url('https://i.ibb.co/brhhfs6/pencil20x20.png'), auto;
+    }
+    .eraser {
+      cursor: url('https://i.ibb.co/kyV4Npc/eraser20x20.png'), auto;
+    }
+
+    /* Sticker Popup */
+    .sticker-popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.4);
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sticker-popup {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 32px 24px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      min-width: 320px;
+      max-width: 90vw;
+      position: relative;
+    }
+    .sticker-popup .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .sticker-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 18px 0 18px 0;
+      justify-content: center;
+    }
+    .sticker-item img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain; /* Prevent skewing, keep aspect ratio */
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      background: #fff; /* Optional: white background for transparent stickers */
+    }
+    .sticker-item img.selected {
+      border-color: #2d81bc;
+    }
+
+    body {
+      background: url('assets/bgcanvas.png') center center / cover no-repeat fixed;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (max-width: 900px) {
+  .wall {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+/* Only show font selection when textMode is true */
+.font-selection-container {
+  width: 100%;
+  text-align: center;
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+.font-selection-container select {
+  padding: 4px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-family: inherit;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+  <div class="header">
+    <div class="header-left">
+      <img src="assets/logo header.png" alt="Logo Header" class="header-logo">
+      
+      <img src="assets/1tahun header.png" alt="1 Tahun Header" class="header-anniversary" style="margin:0 2vw 0 0; display:block;">
+      <div class="header-text">
+        Bagikan momen-momen kalian bersama album <b>Membangun & Menghancurkan</b> 
+        selama 1 tahun ke belakang di dinding ini ↴
+      </div>
+    </div>
+  </div>
+
+  <!-- Wall Section -->
+  <div class="wall">
+    <!-- Bagikan Card -->
+    <div class="card" @click="openDrawingApp">
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <div id="app">
+  <button @click="showCanvas = true" class="plus-btn" style="background: transparent; box-shadow: none; padding: 0; border: none;">
+    <img src="assets/create.png" alt="Create" style="width: 166px; height: 200px; border-radius:50%;">
+  </button>
+
+  <!-- Modal -->
+  <transition name="fade-slide">
+    <div v-if="showCanvas" class="modal-overlay" @click.self="showCanvas = false">
+      <div class="modal-content">
+        <button class="close-btn" @click="showCanvas = false">&times;</button>
+
+        <!-- Drawing App -->
+        <div id="drawing-app">
+          <div class="drawing-section">
+            <div style="position:relative; width:100%; max-width:720px; margin:0 auto;">
+              <canvas ref="canvas"
+                      :class="{pen: pen, eraser: clean}"
+                      @mousedown="startDrawing"
+                      @mousemove="draw"
+                      @mouseup="stopDrawing"
+                      @mouseleave="stopDrawing"
+                      @touchstart="startDrawing"
+                      @touchmove="draw"
+                      @touchend="stopDrawing"
+                      @click="canvasClick"
+                      style="position:relative; z-index:1;">
+              </canvas>
+              <!-- Moveable assets (texts, stickers, images) go here -->
+              <!-- Moveable text box -->
+              <div v-for="(t, idx) in placedTexts"
+                   :key="'text'+idx"
+                   class="placed-text"
+                   :style="{
+                     position: 'absolute',
+                     left: t.screenX + 'px',
+                     top: t.screenY + 'px',
+                     zIndex: 11,
+                     cursor: movingTextIdx === idx ? 'move' : 'pointer',
+                     background: 'transparent',
+                     padding: '2px 6px',
+                     borderRadius: '4px',
+                     border: 'none',
+                     maxWidth: 'calc(100% - 12px)',
+                     fontFamily: selectedFont,
+                     textAlign: 'center',
+                     width: t.boxWidth + 'px',
+                     height: t.boxHeight + 36 + 'px'
+                   }"
+                   @mousedown="startMoveText(idx, $event)"
+                   @touchstart="startMoveText(idx, $event)">
+                <div :style="`white-space: pre-line; font-size:${t.fontSize || 20}px; color:#f5f5e9; font-family: inherit; text-align:center; width:100%; height:calc(100% - 36px); display:flex; align-items:center; justify-content:center;`">
+                  {{ t.value }}
+                </div>
+                <!-- Resize handle (bottom right corner) -->
+                <div
+                  @mousedown.stop="startResizeText(idx, $event)"
+                  @touchstart.stop="startResizeText(idx, $event)"
+                  style="position:absolute; right:0; bottom:36px; width:16px; height:16px; background:#fff; border:1px solid #aaa; cursor:nwse-resize; z-index:14; border-radius:50%;">
+                </div>
+                <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
+                  <button
+                    @click.stop="placeText(idx)"
+                    style="
+                      font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
+                      background: transparent;
+                      color: #fff;
+                      border: 2px solid #fff;
+                      border-radius: 8px;
+                      padding: 8px 28px;
+                      font-size: 1.2rem;
+                      font-weight: 700;
+                      box-shadow: none;
+                      cursor: pointer;
+                      outline: none;
+                      text-align: center;
+                      transition: border-color 0.2s;
+                      margin: 0 auto;
+                      display: block;
+                    ">
+                    Place
+                  </button>
+                </div>
+              </div>
+              <!-- Render placed stickers for moving -->
+              <div v-for="(s, idx) in placedStickers"
+                   :key="'sticker'+idx"
+                   class="placed-sticker"
+                   :style="{
+                     position: 'absolute',
+                     left: s.screenX + 'px',
+                     top: s.screenY + 'px',
+                     zIndex: 12,
+                     cursor: movingStickerIdx === idx ? 'move' : 'pointer',
+                     width: s.width + 'px',
+                     height: s.height + 36 + 'px'
+                   }"
+                   @mousedown="startMoveSticker(idx, $event)"
+                   @touchstart="startMoveSticker(idx, $event)">
+                 <img :src="s.dataUrl" :width="s.width" :height="s.height" style="pointer-events:none; width:100%; height:calc(100% - 36px); object-fit:contain;">
+                <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
+                  <button
+                    @click.stop="placeSticker(idx)"
+                    style="
+                      font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
+                      background: transparent;
+                      color: #fff;
+                      border: 2px solid #fff;
+                      border-radius: 8px;
+                      padding: 8px 28px;
+                      font-size: 1.2rem;
+                      font-weight: 700;
+                      box-shadow: none;
+                      cursor: pointer;
+                      outline: none;
+                      text-align: center;
+                      transition: border-color 0.2s;
+                      margin: 0 auto;
+                      display: block;
+                    ">
+                    Place
+                  </button>
+                </div>
+              </div>
+              <!-- Render placed images for moving -->
+              <div v-for="(img, idx) in uploadedImages"
+                   :key="'img'+idx"
+                   class="uploaded-image"
+                   :style="{
+                     position: 'absolute',
+                     left: img.screenX + 'px',
+                     top: img.screenY + 'px',
+                     zIndex: 14,
+                     cursor: movingImageIdx === idx ? 'move' : 'pointer',
+                     width: img.width + 'px',
+                     height: img.height + 36 + 'px'
+                   }"
+                   @mousedown="startMoveImage(idx, $event)"
+                   @touchstart="startMoveImage(idx, $event)">
+                <img :src="img.dataUrl" :width="img.width" :height="img.height" style="pointer-events:none; width:100%; height:calc(100% - 36px); object-fit:contain;">
+                <!-- Resize handle (bottom right corner) -->
+                <div
+                  @mousedown.stop="startResizeImage(idx, $event)"
+                  @touchstart.stop="startResizeImage(idx, $event)"
+                  style="position:absolute; right:0; bottom:36px; width:16px; height:16px; background:#fff; border:1px solid #aaa; cursor:nwse-resize; z-index:14; border-radius:50%;">
+                </div>
+                <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
+                  <button
+                    @click.stop="placeImage(idx)"
+                    style="
+                      font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
+                      background: transparent;
+                      color: #fff;
+                      border: 2px solid #fff;
+                      border-radius: 8px;
+                      padding: 8px 28px;
+                      font-size: 1.2rem;
+                      font-weight: 700;
+                      box-shadow: none;
+                      cursor: pointer;
+                      outline: none;
+                      text-align: center;
+                      transition: border-color 0.2s;
+                      margin: 0 auto;
+                      display: block;
+                    ">
+                    Place
+                  </button>
+                </div>
+              </div>
+              <!-- Floating text input -->
+              <div v-if="showTextInput" style="position:absolute;z-index:10;"
+                   :style="{
+                     left: textInputX + 'px',
+                     top: textInputY + 'px',
+                     background: 'transparent',
+                     maxWidth: 'calc(100% - 12px)',
+                     textAlign: 'center'
+                   }">
+                <textarea v-model="textValue"
+                          :style="`font-size:20px; background:transparent; resize:none; font-family: ${selectedFont}; text-align:center; color:#f5f5e9;`"
+                          rows="3"
+                          maxlength="140"></textarea>
+                <button @click="addText">OK</button>
+                <button @click="cancelText">Cancel</button>
+              </div>
+            </div>
+            <!-- Toolbar on bottom -->
+            <div class="tools toolbar-bottom">
+              <!-- Text tool -->
+              <img src="assets/icon/ikon text.png" @click="activateTextMode">
+              <!-- Photo tool -->
+              <label style="cursor:pointer;">
+                <img src="assets/icon/ikon gambar.png" style="width:32px; height:32px;">
+                <input type="file" accept="image/*" @change="onImageUpload" style="display:none;">
+              </label>
+              <!-- Sticker tool -->
+              <img src="assets/icon/ikon sticker.png" @click="openStickerPopup" style="margin-right:8px;">
+              <!-- Pen tool -->
+              <img src="assets/icon/ikon kapur.png" @click="pen = true; clean = false; textMode = false; stickerMode = false">
+              <!-- Eraser tool -->
+              <img src="assets/icon/eraser.png" @click="clean = true; pen = false; textMode = false; stickerMode = false">
+              <div style="width:80px; margin:0 auto;">
+                <input type="range" v-model="cleanSize" min="1" max="50" style="width:100%;">
+              </div>
+              <!-- Undo tool -->
+              <img src="assets/icon/undo.png" @click="undo" style="width:32px; height:32px;">
+              <!-- Clear tool -->
+              <button @click="clear"
+                style="
+                  background: transparent;
+                  font-family: 'Roboto', sans-serif;
+                  color: #fff;
+                  border: 2px solid #fff;
+                  border-radius: 6px;
+                  padding: 6px 18px;
+                  outline: none;
+                  font-size: 18px;
+                  margin: 0 8px;
+                  box-shadow: none;
+                  cursor: pointer;
+                  transition: border-color 0.2s;
+                ">
+                Clear
+              </button>
+              <!-- Download tool -->
+              <div style="display:flex; gap:8px; align-items:center;">
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <img src="assets/icon/download.png" @click="downloadCanvas('png')" style="width:32px; height:32px; cursor:pointer;" title="Download PNG">
+                  <span style="font-size:12px; color:#fff; margin-top:2px; text-align:center;">.png</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                  <img src="assets/icon/download.png" @click="downloadCanvas('jpeg')" style="width:32px; height:32px; cursor:pointer;" title="Download JPEG">
+                  <span style="font-size:12px; color:#fff; margin-top:2px; text-align:center;">.jpeg</span>
+                </div>
+              </div>
+            </div>
+            <!-- Font selection, only show when textMode is true -->
+            <div v-if="textMode" class="font-selection-container">
+              <select v-model="selectedFont">
+                <option value="'SF Pro Display', sans-serif" style="font-family: 'SF Pro Display', sans-serif; font-weight:500;">SF Pro Display Medium</option>
+                <option value="'Gloria Hallelujah', cursive" style="font-family: 'Gloria Hallelujah', cursive;">GloriaHallelujah Regular</option>
+                <option value="'Caveat', cursive" style="font-family: 'Caveat', cursive; font-weight:700;">Caveat Bold</option>
+              </select>
+            </div>
+
+            <!-- Sticker Popup -->
+            <div v-if="showStickerPopup" class="sticker-popup-overlay" @click.self="closeStickerPopup">
+              <div class="sticker-popup">
+                <button class="close-btn" @click="closeStickerPopup">&times;</button>
+                <h3 style="
+                  font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
+                  text-align: center;
+                  font-size: 2rem;
+                  margin-bottom: 18px;
+                  font-weight: 700;
+                ">
+                  Select a Sticker
+                </h3>
+                <div class="sticker-list">
+                  <div v-for="(url, idx) in stickers" :key="idx" class="sticker-item">
+                    <img :src="url" @click="selectSticker(url)" :class="{selected: selectedSticker === url}" />
+                  </div>
+                </div>
+                <div style="width:100%; display:flex; justify-content:center; align-items:center; margin-top:24px;">
+                  <button v-if="selectedSticker"
+                    @click="placeStickerOnCanvas"
+                    style="
+                      font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
+                      background: transparent;
+                      color: #111;
+                      border: 2px solid #111;
+                      border-radius: 8px;
+                      padding: 12px 32px;
+                      font-size: 1.3rem;
+                      font-weight: 700;
+                      box-shadow: none;
+                      cursor: pointer;
+                      outline: none;
+                      text-align: center;
+                      transition: border-color 0.2s;
+                      margin: 0 auto;
+                      display: block;
+                    ">
+                    Place
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </transition>
+</div>
+  </div>
+</div>
+
+    <!-- Placeholders -->
+    <div class="card">Placeholder 1</div>
+    <div class="card">Placeholder 2</div>
+    <div class="card">Placeholder 3</div>
+    <div class="card">Placeholder 4</div>
+    <div class="card">Placeholder 5</div>
+    <div class="card"><img src="submission/test.png" alt=""></div>
+  </div>
+
+<!-- Share Assets Section -->
+<div class="share-assets-section">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:320px;">
+    <img src="assets/share-feeds.png" alt="Share Feeds" class="share-asset-img" style="width:48vw; max-width:420px; height:auto; border-radius:18px; box-shadow:0 4px 16px rgba(0,0,0,0.18); cursor:pointer; transition:transform 0.2s;" onclick="downloadAsset('assets/share-feeds.png')" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+    <span style="font-size:19px; color:#fff; margin-top:14px; text-align:center; font-family:'Gloria Hallelujah', cursive;">Share Feeds</span>
+  </div>
+</div>
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+function downloadAsset(path) {
+  const link = document.createElement('a');
+  link.href = path;
+  link.download = path.split('/').pop();
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    showCanvas: false,
+    x: 0, y: 0, mDown: false,
+    pen: true, penSize: 3,
+    clean: false, cleanSize: 20,
+    color: '#000000', save: false,
+    imageType: 'image/png', dataUrl: '',
+    history: [],
+    paletteColors: ['#000000', '#FF0000', '#00FF000', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF'],
+    ctx: null,
+    textMode: false,
+    showTextInput: false,
+    textInputX: 0,
+    textInputY: 0,
+    textValue: '',
+    placedTexts: [],
+    lastTextCanvasX: 0,
+    lastTextCanvasY: 0,
+    movingTextIdx: null,
+    moveOffsetX: 0,
+    moveOffsetY: 0,
+    stickerMode: false,
+    placedStickers: [],
+    movingStickerIdx: null,
+    stickerOffsetX: 0,
+    stickerOffsetY: 0,
+    stickers: [],
+    selectedSticker: null,
+    uploadedImages: [],
+    movingImageIdx: null,
+    imageOffsetX: 0,
+    imageOffsetY: 0,
+    selectedFont: "'Roboto', sans-serif",
+    showStickerPopup: false, // <-- Control sticker popup visibility
+    brushImg: src="brushes/charcoal-brush.png", // <-- Add brush image data property
+    resizingStickerIdx: null,
+    resizeStickerStartX: 0,
+    resizeStickerStartY: 0,
+    resizeStickerStartWidth: 0,
+    resizeStickerStartHeight: 0,
+    resizingTextIdx: null,
+    resizeTextStartX: 0,
+    resizeTextStartY: 0,
+    resizeTextStartWidth: 0,
+    resizeTextStartHeight: 0,
+    resizingImageIdx: null,
+    resizeImageStartX: 0,
+    resizeImageStartY: 0,
+    resizeImageStartWidth: 0,
+    resizeImageStartHeight: 0,
+  },
+  mounted() {
+    // Load charcoal brush image
+    this.brushImg = new Image();
+    this.brushImg.src = 'brushes/charcoal-brush.png';
+
+    const stickerCount = 20; // Change to your actual sticker count
+    for (let i = 1; i <= stickerCount; i++) {
+      this.stickers.push(`stickers/sticker${i}.png`);
+    }
+  },
+  watch: {
+    showCanvas(newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          const canvas = this.$refs.canvas;
+          this.ctx = canvas.getContext('2d');
+          canvas.width = 720;
+          canvas.height = 720;
+          // Make canvas transparent, remove any fill
+          this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+      }
+    }
+  },
+  methods: {
+    getPosition(e) {
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    },
+    startDrawing(e) {
+      if (e.type.includes('touch')) e.preventDefault();
+      this.saveHistory();
+      this.mDown = true;
+      const pos = this.getPosition(e);
+      this.x = pos.x;
+      this.y = pos.y;
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.x, this.y);
+      this.ctx.lineWidth = this.penSize;
+      this.ctx.strokeStyle = this.color;
+    },
+    draw(e) {
+      if (!this.mDown) return;
+      if (e.type.includes('touch')) e.preventDefault();
+      const pos = this.getPosition(e);
+      const newX = pos.x;
+      const newY = pos.y;
+
+    // ...existing code...
+        lines.forEach((line, i) => {
+          ctx.fillText(line, t.canvasX, t.canvasY + i * 24);
+        });
+      });
+      // Draw each sticker onto canvas before saving
+      const drawSticker = (sticker, cb) => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, sticker.canvasX, sticker.canvasY, sticker.width, sticker.height);
+          cb();
+        };
+        img.src = sticker.dataUrl;
+      };
+      // Draw stickers sequentially to ensure all are rendered before download
+      let i = 0;
+      const drawNextSticker = () => {
+        if (i < this.placedStickers.length) {
+          drawSticker(this.placedStickers[i], () => {
+            i++;
+            drawNextSticker();
+          });
+        } else {
+          this.dataUrl = canvas.toDataURL(this.imageType);
+        }
+      };
+      drawNextSticker();
+    },
+    saveHistory() {
+      const canvas = this.$refs.canvas;
+      this.history.push(canvas.toDataURL());
+      if (this.history.length > 20) this.history.shift();
+    },
+    undo() {
+      if (this.history.length > 0) {
+        const lastState = this.history.pop();
+        const img = new Image();
+        img.src = lastState;
+        img.onload = () => {
+          const canvas = this.$refs.canvas;
+          this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+          this.ctx.drawImage(img, 0, 0);
+        };
+      }
+    },
+    addText() {
+      if (!this.textValue.trim()) {
+        this.showTextInput = false;
+        return;
+      }
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      // Limit floating textbox only inside canvas area
+      let x = this.textInputX;
+      let y = this.textInputY;
+      const boxWidth = 200; // Approximate width of textbox
+      const boxHeight = 60; // Approximate height of textbox
+      x = Math.max(0, Math.min(rect.width - boxWidth, x));
+      y = Math.max(0, Math.min(rect.height - boxHeight, y));
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      // Use center of the box for canvasX
+      const canvasX = (x + boxWidth / 2) * scaleX;
+      const canvasY = y * scaleY;
+      this.placedTexts.push({
+        value: this.textValue,
+        canvasX: canvasX,
+        canvasY: canvasY,
+        screenX: x,
+        screenY: y,
+        boxWidth,
+        boxHeight
+      });
+      this.showTextInput = false;
+      this.textValue = '';
+    },
+    placeText(idx) {
+      const t = this.placedTexts[idx];
+      const ctx = this.$refs.canvas.getContext('2d');
+      ctx.save();
+      ctx.font = `${t.fontSize || 20}px ${this.selectedFont}`;
+      ctx.fillStyle = "#f5f5e9"; // Offwhite color
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      const lines = t.value.split('\n');
+      lines.forEach((line, i) => {
+        ctx.fillText(line, t.canvasX, t.canvasY + i * (t.fontSize || 20) * 1.2);
+      });
+      ctx.restore();
+      this.placedTexts.splice(idx, 1);
+    },
+    placeSticker(idx) {
+      const s = this.placedStickers[idx];
+      const ctx = this.$refs.canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, s.canvasX, s.canvasY, s.width, s.height);
+        // Remove the sticker after rendering
+        this.$delete(this.placedStickers, idx);
+      };
+      img.src = s.dataUrl;
+    },
+    placeImage(idx) {
+      const imgObj = this.uploadedImages[idx];
+      const ctx = this.$refs.canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, imgObj.canvasX, imgObj.canvasY, imgObj.width, imgObj.height);
+        // Remove the moveable image after rendering
+        this.$delete(this.uploadedImages, idx);
+      };
+      img.src = imgObj.dataUrl;
+    },
+    canvasClick(e) {
+      if (!this.textMode) return;
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      let clientX = e.clientX;
+      let clientY = e.clientY;
+      // Only allow text input inside canvas area
+      if (
+        clientX < rect.left ||
+        clientX > rect.right ||
+        clientY < rect.top ||
+        clientY > rect.bottom
+      ) return;
+      let x = clientX - rect.left;
+      let y = clientY - rect.top;
+      // Limit floating textbox only inside canvas area
+      const boxWidth = 200;
+      const boxHeight = 60;
+      x = Math.max(0, Math.min(rect.width - boxWidth, x));
+      y = Math.max(0, Math.min(rect.height - boxHeight, y));
+      this.textInputX = x;
+      this.textInputY = y;
+      this.showTextInput = true;
+      this.textValue = '';
+      this.lastTextCanvasX = (x + boxWidth / 2) * scaleX;
+      this.lastTextCanvasY = y * scaleY;
+    },
+    cancelText() {
+      this.showTextInput = false;
+      this.textValue = '';
+    },
+    startMoveText(idx, e) {
+      e.preventDefault();
+      this.movingTextIdx = idx;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      this.moveOffsetX = clientX - this.placedTexts[idx].screenX;
+      this.moveOffsetY = clientY - this.placedTexts[idx].screenY;
+      window.addEventListener('mousemove', this.moveTextBox);
+      window.addEventListener('mouseup', this.stopMoveText);
+      window.addEventListener('touchmove', this.moveTextBox);
+      window.addEventListener('touchend', this.stopMoveText);
+    },
+    moveTextBox(e) {
+      if (this.movingTextIdx === null) return;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      // Restrict movement to canvas area
+      const boxWidth = this.placedTexts[this.movingTextIdx].boxWidth || 200;
+      const boxHeight = this.placedTexts[this.movingTextIdx].boxHeight || 60;
+      let newScreenX = clientX - this.moveOffsetX;
+      let newScreenY = clientY - this.moveOffsetY;
+      newScreenX = Math.max(0, Math.min(rect.width - boxWidth, newScreenX));
+      newScreenY = Math.max(0, Math.min(rect.height - boxHeight, newScreenY));
+      const idx = this.movingTextIdx;
+      this.placedTexts[idx].screenX = newScreenX;
+      this.placedTexts[idx].screenY = newScreenY;
+      // Use center of the box for canvasX
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      this.placedTexts[idx].canvasX = (newScreenX + boxWidth / 2) * scaleX;
+      this.placedTexts[idx].canvasY = newScreenY * scaleY;
+    },
+    stopMoveText() {
+      this.movingTextIdx = null;
+      window.removeEventListener('mousemove', this.moveTextBox);
+      window.removeEventListener('mouseup', this.stopMoveText);
+      window.removeEventListener('touchmove', this.moveTextBox);
+      window.removeEventListener('touchend', this.stopMoveText);
+    },
+    startMoveSticker(idx, e) {
+      e.preventDefault();
+      this.movingStickerIdx = idx;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      this.stickerOffsetX = clientX - this.placedStickers[idx].screenX;
+      this.stickerOffsetY = clientY - this.placedStickers[idx].screenY;
+      window.addEventListener('mousemove', this.moveStickerBox);
+      window.addEventListener('mouseup', this.stopMoveSticker);
+      window.addEventListener('touchmove', this.moveStickerBox);
+      window.addEventListener('touchend', this.stopMoveSticker);
+    },
+    moveStickerBox(e) {
+      if (this.movingStickerIdx === null) return;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      // Restrict movement to canvas area
+      let newScreenX = clientX - this.stickerOffsetX;
+      let newScreenY = clientY - this.stickerOffsetY;
+      const sticker = this.placedStickers[this.movingStickerIdx];
+      newScreenX = Math.max(0, Math.min(rect.width - sticker.width, newScreenX));
+      newScreenY = Math.max(0, Math.min(rect.height - sticker.height, newScreenY));
+      const idx = this.movingStickerIdx;
+      this.placedStickers[idx].screenX = newScreenX;
+      this.placedStickers[idx].screenY = newScreenY;
+      // Update canvas coordinates for saving
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      this.placedStickers[idx].canvasX = newScreenX * scaleX;
+      this.placedStickers[idx].canvasY = newScreenY * scaleY;
+    },
+    stopMoveSticker() {
+      this.movingStickerIdx = null;
+      window.removeEventListener('mousemove', this.moveStickerBox);
+      window.removeEventListener('mouseup', this.stopMoveSticker);
+      window.removeEventListener('touchmove', this.moveStickerBox);
+      window.removeEventListener('touchend', this.stopMoveSticker);
+    },
+    // Update Text button handler to disable pen tool
+    // In template: <button @click="activateTextMode">Text</button>
+    activateTextMode() {
+      this.textMode = true;
+      this.pen = false;
+      this.clean = false;
+    },
+    openStickerPopup() {
+      this.showStickerPopup = true;
+      this.stickerMode = true;
+      this.textMode = false;
+      this.pen = false;
+      this.clean = false;
+      this.selectedSticker = null;
+    },
+    closeStickerPopup() {
+      this.showStickerPopup = false;
+      this.stickerMode = false;
+      this.selectedSticker = null;
+    },
+    selectSticker(url) {
+      this.selectedSticker = url;
+    },
+    placeStickerOnCanvas() {
+      if (!this.selectedSticker) return;
+      const img = new Image();
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+        const canvas = this.$refs.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const screenX = rect.width / 2 - width / 2;
+        const screenY = rect.height / 2 - height / 2;
+        const canvasX = screenX * scaleX;
+        const canvasY = screenY * scaleY;
+        this.placedStickers.push({
+          dataUrl: this.selectedSticker,
+          width,
+          height,
+          screenX,
+          screenY,
+          canvasX,
+          canvasY
+        });
+        this.showStickerPopup = false;
+        this.stickerMode = false;
+        this.selectedSticker = null;
+      };
+      img.src = this.selectedSticker;
+    },
+    onStickerSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          // Use original image dimensions
+          const width = img.width;
+          const height = img.height;
+          const canvas = this.$refs.canvas;
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          const screenX = rect.width / 2 - width / 2;
+          const screenY = rect.height / 2 - height / 2;
+          const canvasX = screenX * scaleX;
+          const canvasY = screenY * scaleY;
+          this.placedStickers.push({
+            dataUrl: ev.target.result,
+            width,
+            height,
+            screenX,
+            screenY,
+            canvasX,
+            canvasY
+          });
+          this.stickerMode = false;
+          e.target.value = '';
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+    onImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = this.$refs.canvas;
+          const canvasWidth = canvas.width;
+          const canvasHeight = canvas.height;
+          // Resize image to 30% of canvas size, keeping aspect ratio
+          let targetWidth = canvasWidth * 0.3;
+          let targetHeight = canvasHeight * 0.3;
+          const aspect = img.width / img.height;
+          if (aspect > 1) {
+            targetHeight = targetWidth / aspect;
+          } else {
+            targetWidth = targetHeight * aspect;
+          }
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          const screenX = rect.width / 2 - targetWidth / 2;
+          const screenY = rect.height / 2 - targetHeight / 2;
+          const canvasX = screenX * scaleX;
+          const canvasY = screenY * scaleY;
+          this.uploadedImages.push({
+            dataUrl: ev.target.result,
+            width: targetWidth,
+            height: targetHeight,
+            screenX,
+            screenY,
+            canvasX,
+            canvasY
+          });
+          e.target.value = '';
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+    startMoveImage(idx, e) {
+      e.preventDefault();
+      this.movingImageIdx = idx;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      this.imageOffsetX = clientX - this.uploadedImages[idx].screenX;
+      this.imageOffsetY = clientY - this.uploadedImages[idx].screenY;
+      window.addEventListener('mousemove', this.moveImageBox);
+      window.addEventListener('mouseup', this.stopMoveImage);
+      window.addEventListener('touchmove', this.moveImageBox);
+      window.addEventListener('touchend', this.stopMoveImage);
+    },
+    moveImageBox(e) {
+      if (this.movingImageIdx === null) return;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      let img = this.uploadedImages[this.movingImageIdx];
+      let newScreenX = clientX - this.imageOffsetX;
+      let newScreenY = clientY - this.imageOffsetY;
+      newScreenX = Math.max(0, Math.min(rect.width - img.width, newScreenX));
+      newScreenY = Math.max(0, Math.min(rect.height - img.height, newScreenY));
+      img.screenX = newScreenX;
+      img.screenY = newScreenY;
+      // Update canvas coordinates for saving
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      img.canvasX = newScreenX * scaleX;
+      img.canvasY = newScreenY * scaleY;
+    },
+    stopMoveImage() {
+      this.movingImageIdx = null;
+      window.removeEventListener('mousemove', this.moveImageBox);
+      window.removeEventListener('mouseup', this.stopMoveImage);
+      window.removeEventListener('touchmove', this.moveImageBox);
+      window.removeEventListener('touchend', this.stopMoveImage);
+    },
+    startResizeText(idx, e) {
+      e.preventDefault();
+      this.resizingTextIdx = idx;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      this.resizeTextStartX = clientX;
+      this.resizeTextStartY = clientY;
+      this.resizeTextStartWidth = this.placedTexts[idx].boxWidth;
+      this.resizeTextStartHeight = this.placedTexts[idx].boxHeight;
+      window.addEventListener('mousemove', this.resizeTextBox);
+      window.addEventListener('mouseup', this.stopResizeText);
+      window.addEventListener('touchmove', this.resizeTextBox);
+      window.addEventListener('touchend', this.stopResizeText);
+    },
+    resizeTextBox(e) {
+      if (this.resizingTextIdx === null) return;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const dx = clientX - this.resizeTextStartX;
+      const dy = clientY - this.resizeTextStartY;
+      let text = this.placedTexts[this.resizingTextIdx];
+      // Retain aspect ratio
+      const aspect = this.resizeTextStartWidth / this.resizeTextStartHeight;
+      let newWidth = Math.max(40, this.resizeTextStartWidth + dx);
+      let newHeight = Math.max(20, this.resizeTextStartHeight + dy);
+      if (aspect > 1) {
+        newHeight = newWidth / aspect;
+      } else {
+        newWidth = newHeight * aspect;
+      }
+      // Restrict to canvas area
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      newWidth = Math.min(newWidth, rect.width - text.screenX);
+      newHeight = Math.min(newHeight, rect.height - text.screenY);
+      text.boxWidth = newWidth;
+      text.boxHeight = newHeight;
+      // Update canvas coordinates for saving
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      text.canvasX = (text.screenX + newWidth / 2) * scaleX;
+      text.canvasY = text.screenY * scaleY;
+      // Dynamically update font size based on box height (limit min/max)
+      text.fontSize = Math.max(12, Math.min(80, Math.round(newHeight * 0.5)));
+    },
+    stopResizeText() {
+      this.resizingTextIdx = null;
+      window.removeEventListener('mousemove', this.resizeTextBox);
+      window.removeEventListener('mouseup', this.stopResizeText);
+      window.removeEventListener('touchmove', this.resizeTextBox);
+      window.removeEventListener('touchend', this.stopResizeText);
+    },
+    startResizeImage(idx, e) {
+      e.preventDefault();
+      this.resizingImageIdx = idx;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      this.resizeImageStartX = clientX;
+      this.resizeImageStartY = clientY;
+      this.resizeImageStartWidth = this.uploadedImages[idx].width;
+      this.resizeImageStartHeight = this.uploadedImages[idx].height;
+      window.addEventListener('mousemove', this.resizeImageBox);
+      window.addEventListener('mouseup', this.stopResizeImage);
+      window.addEventListener('touchmove', this.resizeImageBox);
+      window.addEventListener('touchend', this.stopResizeImage);
+    },
+    resizeImageBox(e) {
+      if (this.resizingImageIdx === null) return;
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      const dx = clientX - this.resizeImageStartX;
+      const dy = clientY - this.resizeImageStartY;
+      let img = this.uploadedImages[this.resizingImageIdx];
+      // Retain aspect ratio
+      const aspect = this.resizeImageStartWidth / this.resizeImageStartHeight;
+      let newWidth = Math.max(20, this.resizeImageStartWidth + dx);
+      let newHeight = Math.max(20, this.resizeImageStartHeight + dy);
+      if (aspect > 1) {
+        newHeight = newWidth / aspect;
+      } else {
+        newWidth = newHeight * aspect;
+      }
+      // Restrict to canvas area
+      const canvas = this.$refs.canvas;
+      const rect = canvas.getBoundingClientRect();
+      newWidth = Math.min(newWidth, rect.width - img.screenX);
+      newHeight = Math.min(newHeight, rect.height - img.screenY);
+      img.width = newWidth;
+      img.height = newHeight;
+      // Update canvas coordinates for saving
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      img.canvasX = img.screenX * scaleX;
+      img.canvasY = img.screenY * scaleY;
+    },
+    stopResizeImage() {
+      this.resizingImageIdx = null;
+      window.removeEventListener('mousemove', this.resizeImageBox);
+      window.removeEventListener('mouseup', this.stopResizeImage);
+      window.removeEventListener('touchmove', this.resizeImageBox);
+      window.removeEventListener('touchend', this.stopResizeImage);
+    },
+    downloadCanvas(type = 'png') {
+      const canvas = this.$refs.canvas;
+      let dataUrl;
+      if (type === 'png') {
+        dataUrl = canvas.toDataURL('image/png');
+      } else if (type === 'jpeg') {
+        // Draw background image first, then overlay canvas
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        // Draw background
+        const bg = new Image();
+        bg.onload = () => {
+          tempCtx.drawImage(bg, 0, 0, tempCanvas.width, tempCanvas.height);
+          // Draw user's canvas on top
+          tempCtx.drawImage(canvas, 0, 0);
+          dataUrl = tempCanvas.toDataURL('image/jpeg', 0.92);
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = 'M&M Anniversary Canvas.jpeg';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        };
+        bg.src = 'assets/bgcanvas.png';
+        return;
+      }
+      // Download PNG
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'M&M Anniversary Canvas.' + type;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+});
+</script>
+
+
+</body>
+</html>
