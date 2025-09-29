@@ -475,52 +475,47 @@
                   {{ t.value }}
                 </div>
               </div>
-              <!-- Render placed stickers for moving -->
-              <div v-for="(s, idx) in placedStickers"
-                   :key="'sticker'+idx"
-                   class="placed-sticker"
-                   :style="{
-                     position: 'absolute',
-                     left: s.screenX + 'px',
-                     top: s.screenY + 'px',
-                     zIndex: 12,
-                     cursor: movingStickerIdx === idx ? 'move' : 'pointer',
-                     width: s.width + 'px',
-                     height: s.height + 36 + 'px'
-                   }"
-                   @mousedown="startMoveSticker(idx, $event)"
-                   @touchstart="startMoveSticker(idx, $event)">
-                <img :src="s.dataUrl" :width="s.width" :height="s.height" style="pointer-events:none; width:100%; height:calc(100% - 36px); object-fit:contain;">
-                <!-- Resize handle (bottom right corner) -->
-                <div
-                  @mousedown.stop="startResizeSticker(idx, $event)"
-                  @touchstart.stop="startResizeSticker(idx, $event)"
-                  style="position:absolute; right:0; bottom:36px; width:16px; height:16px; background:#fff; border:1px solid #aaa; cursor:nwse-resize; z-index:14; border-radius:50%;">
-                </div>
-                <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
-                  <button
-                    @click.stop="placeSticker(idx)"
-                    style="
-                      font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
-                      background: transparent;
-                      color: #fff;
-                      border: 2px solid #fff;
-                      border-radius: 8px;
-                      padding: 8px 28px;
-                      font-size: 1.2rem;
-                      font-weight: 700;
-                      box-shadow: none;
-                      cursor: pointer;
-                      outline: none;
-                      text-align: center;
-                      transition: border-color 0.2s;
-                      margin: 0 auto;
-                      display: block;
-                    ">
-                    Place
-                  </button>
-                </div>
-              </div>
+              <!-- Render placed stickers for moving and resizing -->
+<div v-for="(s, idx) in placedStickers"
+     :key="'sticker'+idx"
+     class="placed-sticker"
+     :style="{
+       position: 'absolute',
+       left: s.screenX + 'px',
+       top: s.screenY + 'px',
+       zIndex: 12,
+       cursor: movingStickerIdx === idx ? 'move' : 'pointer',
+       width: s.width + 'px',
+       height: s.height + 36 + 'px'
+     }"
+     @mousedown="startMoveSticker(idx, $event)"
+     @touchstart="startMoveSticker(idx, $event)">
+  <img :src="s.dataUrl" :width="s.width" :height="s.height" style="pointer-events:none; width:100%; height:calc(100% - 36px); object-fit:contain;">
+  <!-- Resize handle (bottom right corner) for sticker -->
+  <div
+    @mousedown.stop="startResize('sticker', idx, $event)"
+    @touchstart.stop="startResize('sticker', idx, $event)"
+    style="position:absolute; right:0; bottom:36px; width:16px; height:16px; background:#fff; border:1px solid #aaa; cursor:nwse-resize; z-index:14; border-radius:50%;">
+  </div>
+  <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
+    <button
+      @click.stop="placeSticker(idx)"
+      style="
+        padding: 8px 28px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        box-shadow: none;
+        cursor: pointer;
+        outline: none;
+        text-align: center;
+        transition: border-color 0.2s;
+        margin: 0 auto;
+        display: block;
+      ">
+      Place
+    </button>
+  </div>
+</div>
               <!-- Render placed images for moving -->
               <div v-for="(img, idx) in uploadedImages"
                    :key="'img'+idx"
@@ -545,7 +540,7 @@
                 </div>
                 <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
                   <button
-                    @click.stop="placeImage(idx)"
+                    @click.stop="placeText(idx)"
                     style="
                       font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
                       background: transparent;
@@ -582,6 +577,61 @@
                           maxlength="140"></textarea>
                 <button @click="addText">OK</button>
                 <button @click="cancelText">Cancel</button>
+              </div>
+              <!-- Moveable text box with resize and place button -->
+              <div v-for="(t, idx) in placedTexts"
+                   :key="'text'+idx"
+                   class="placed-text"
+                   :style="{
+                     position: 'absolute',
+                     left: t.screenX + 'px',
+                     top: t.screenY + 'px',
+                     zIndex: 11,
+                     cursor: movingTextIdx === idx ? 'move' : 'pointer',
+                     background: 'transparent',
+                     padding: '2px 6px',
+                     borderRadius: '4px',
+                     border: 'none',
+                     maxWidth: 'calc(100% - 12px)',
+                     fontFamily: selectedFont,
+                     textAlign: 'center',
+                     width: t.boxWidth + 'px',
+                     height: t.boxHeight + 36 + 'px'
+                   }"
+                   @mousedown="startMoveText(idx, $event)"
+                   @touchstart="startMoveText(idx, $event)">
+                <div :style="`white-space: pre-line; font-size:${t.fontSize || 20}px; color:#f5f5e9; font-family: inherit; text-align:center; width:100%; height:calc(100% - 36px); display:flex; align-items:center; justify-content:center;`">
+                  {{ t.value }}
+                </div>
+                <!-- Resize handle (bottom right corner) -->
+                <div
+                  @mousedown.stop="startResizeText(idx, $event)"
+                  @touchstart.stop="startResizeText(idx, $event)"
+                  style="position:absolute; right:0; bottom:36px; width:16px; height:16px; background:#fff; border:1px solid #aaa; cursor:nwse-resize; z-index:14; border-radius:50%;">
+                </div>
+                <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
+                  <button
+                    @click.stop="placeText(idx)"
+                    style="
+                      font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
+                      background: transparent;
+                      color: #fff;
+                      border: 2px solid #fff;
+                      border-radius: 8px;
+                      padding: 8px 28px;
+                      font-size: 1.2rem;
+                      font-weight: 700;
+                      box-shadow: none;
+                      cursor: pointer;
+                      outline: none;
+                      text-align: center;
+                      transition: border-color 0.2s;
+                      margin: 0 auto;
+                      display: block;
+                    ">
+                    Place
+                  </button>
+                </div>
               </div>
             </div>
             <!-- Toolbar on bottom -->
@@ -763,11 +813,6 @@ new Vue({
     selectedFont: "'Roboto', sans-serif",
     showStickerPopup: false, // <-- Control sticker popup visibility
     brushImg: src="brushes/charcoal-brush.png", // <-- Add brush image data property
-    resizingStickerIdx: null,
-    resizeStickerStartX: 0,
-    resizeStickerStartY: 0,
-    resizeStickerStartWidth: 0,
-    resizeStickerStartHeight: 0,
     resizingTextIdx: null,
     resizeTextStartX: 0,
     resizeTextStartY: 0,
@@ -1009,7 +1054,7 @@ new Vue({
     placeImage(idx) {
       const imgObj = this.uploadedImages[idx];
       const ctx = this.$refs.canvas.getContext('2d');
-      const img = new Image();
+      const img = new window.Image();
       img.onload = () => {
         ctx.drawImage(img, imgObj.canvasX, imgObj.canvasY, imgObj.width, imgObj.height);
         // Remove the moveable image after rendering
