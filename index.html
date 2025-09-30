@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Feast M&M</title>
+  <title>Vue Drawing App Modal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="./">
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@500&family=Gloria+Hallelujah&family=Caveat:wght@700&display=swap" rel="stylesheet">
 
   <style>
@@ -14,24 +15,23 @@
     flex-wrap: nowrap;
     min-width: 320px;
   }
-  @media (max-width: 500px) {
-    .share-assets-section {
-      gap: 16px;
-      min-width: 0;
-    }
+  .share-assets-section > div {
+    width: 40vw;
+    min-width: 200px;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 320px;
+  }
+  @media (max-width: 350px) {
     .share-assets-section > div {
-      width: 45vw;
+      width: 60vw;
       min-width: 120px;
       max-width: 160px;
     }
   }
-  .share-assets-section {
-  margin-top: 10rem !important;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-  }
-
 
 /* button submit */
 .upload-section {
@@ -423,7 +423,7 @@
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
     <div id="app">
   <button @click="showCanvas = true" class="plus-btn" style="background: transparent; box-shadow: none; padding: 0; border: none;">
-    <img src="assets/create.png" alt="Create" style="width: 166px; height: 200px; border-radius:50%;">
+    <img src="assets/CREATE.png" alt="Create" style="width: 166px; height: 200px; border-radius:50%;">
   </button>
 
   <!-- Modal -->
@@ -449,32 +449,6 @@
                       style="position:relative; z-index:1;">
               </canvas>
               <!-- Moveable assets (texts, stickers, images) go here -->
-              <!-- Moveable text box -->
-              <div v-for="(t, idx) in placedTexts"
-                   :key="'text'+idx"
-                   class="placed-text"
-                   :style="{
-                     position: 'absolute',
-                     left: t.screenX + 'px',
-                     top: t.screenY + 'px',
-                     zIndex: 11,
-                     cursor: movingTextIdx === idx ? 'move' : 'pointer',
-                     background: 'transparent',
-                     padding: '2px 6px',
-                     borderRadius: '4px',
-                     border: 'none',
-                     maxWidth: 'calc(100% - 12px)',
-                     fontFamily: selectedFont,
-                     textAlign: 'center',
-                     width: t.boxWidth + 'px',
-                     height: t.boxHeight + 36 + 'px'
-                   }"
-                   @mousedown="startMoveText(idx, $event)"
-                   @touchstart="startMoveText(idx, $event)">
-                <div :style="`white-space: pre-line; font-size:${t.fontSize || 20}px; color:#f5f5e9; font-family: inherit; text-align:center; width:100%; height:calc(100% - 36px); display:flex; align-items:center; justify-content:center;`">
-                  {{ t.value }}
-                </div>
-              </div>
               <!-- Render placed stickers for moving -->
               <div v-for="(s, idx) in placedStickers"
                    :key="'sticker'+idx"
