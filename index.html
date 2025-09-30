@@ -520,6 +520,7 @@
                 <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
                   <button
                     @click.stop="placeImage(idx)"
+                    @touchend.stop="placeImage(idx)"
                     style="
                       font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
                       background: transparent;
@@ -1221,17 +1222,21 @@ new Vue({
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        // Responsive sticker size
-        let targetWidth = rect.width < 400 ? Math.max(64, rect.width * 0.35) : img.width;
-        let targetHeight = rect.width < 400 ? Math.max(64, rect.width * 0.35 * (img.height/img.width)) : img.height;
-        const screenX = rect.width / 2 - targetWidth / 2;
-        const screenY = rect.height / 2 - targetHeight / 2;
+        // Maintain aspect ratio and preview placement
+        let previewW = img.width;
+        let previewH = img.height;
+        if (rect.width < 400) {
+          previewW = Math.max(64, rect.width * 0.35);
+          previewH = Math.round(previewW * (img.height / img.width));
+        }
+        const screenX = rect.width / 2 - previewW / 2;
+        const screenY = rect.height / 2 - previewH / 2;
         const canvasX = screenX * scaleX;
         const canvasY = screenY * scaleY;
         this.placedStickers.push({
           dataUrl: this.selectedSticker,
-          width: targetWidth,
-          height: targetHeight,
+          width: previewW,
+          height: previewH,
           screenX,
           screenY,
           canvasX,
