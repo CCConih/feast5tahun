@@ -473,6 +473,7 @@
                 <div style="position:absolute; left:0; bottom:0; width:100%; height:36px; display:flex; align-items:center; justify-content:center;">
                   <button
                     @click.stop="placeSticker(idx)"
+                    @touchend.stop="placeSticker(idx)"
                     style="
                       font-family: 'SF Pro Display', 'SF Pro', 'Segoe UI', 'Arial', sans-serif;
                       background: transparent;
@@ -1052,9 +1053,14 @@ new Vue({
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
-      let clientX = e.clientX;
-      let clientY = e.clientY;
-      // Only allow text input inside canvas area
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
       if (
         clientX < rect.left ||
         clientX > rect.right ||
@@ -1063,9 +1069,9 @@ new Vue({
       ) return;
       let x = clientX - rect.left;
       let y = clientY - rect.top;
-      // Limit floating textbox only inside canvas area
-      const boxWidth = 200;
-      const boxHeight = 60;
+      // Responsive box size for mobile
+      let boxWidth = rect.width < 400 ? Math.max(120, rect.width * 0.6) : 200;
+      let boxHeight = rect.width < 400 ? Math.max(40, rect.width * 0.18) : 60;
       x = Math.max(0, Math.min(rect.width - boxWidth, x));
       y = Math.max(0, Math.min(rect.height - boxHeight, y));
       this.textInputX = x;
@@ -1165,10 +1171,10 @@ new Vue({
       // Restrict movement to canvas area
       let newScreenX = clientX - this.stickerOffsetX;
       let newScreenY = clientY - this.stickerOffsetY;
-      const sticker = this.placedStickers[this.movingStickerIdx];
+      const idx = this.movingStickerIdx;
+      const sticker = this.placedStickers[idx];
       newScreenX = Math.max(0, Math.min(rect.width - sticker.width, newScreenX));
       newScreenY = Math.max(0, Math.min(rect.height - sticker.height, newScreenY));
-      const idx = this.movingStickerIdx;
       this.placedStickers[idx].screenX = newScreenX;
       this.placedStickers[idx].screenY = newScreenY;
       // Update canvas coordinates for saving
@@ -1211,20 +1217,21 @@ new Vue({
       if (!this.selectedSticker) return;
       const img = new Image();
       img.onload = () => {
-        const width = img.width;
-        const height = img.height;
         const canvas = this.$refs.canvas;
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        const screenX = rect.width / 2 - width / 2;
-        const screenY = rect.height / 2 - height / 2;
+        // Responsive sticker size
+        let targetWidth = rect.width < 400 ? Math.max(64, rect.width * 0.35) : img.width;
+        let targetHeight = rect.width < 400 ? Math.max(64, rect.width * 0.35 * (img.height/img.width)) : img.height;
+        const screenX = rect.width / 2 - targetWidth / 2;
+        const screenY = rect.height / 2 - targetHeight / 2;
         const canvasX = screenX * scaleX;
         const canvasY = screenY * scaleY;
         this.placedStickers.push({
           dataUrl: this.selectedSticker,
-          width,
-          height,
+          width: targetWidth,
+          height: targetHeight,
           screenX,
           screenY,
           canvasX,
