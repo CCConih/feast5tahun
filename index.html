@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Feast 1 Tahun M&M</title>
+  <title>Feast</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="./">
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@500&family=Gloria+Hallelujah&family=Caveat:wght@700&display=swap" rel="stylesheet">
@@ -1020,18 +1020,23 @@ new Vue({
     },
     placeText(idx) {
       const t = this.placedTexts[idx];
-      const ctx = this.$refs.canvas.getContext('2d');
+      const canvas = this.$refs.canvas;
+      const ctx = canvas.getContext('2d');
       ctx.save();
       ctx.font = `${t.fontSize || 20}px ${this.selectedFont}`;
       ctx.fillStyle = "#f5f5e9";
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      // Use preview screen coordinates and size for rendering
+      const renderX = (t.screenX + (t.boxWidth / 2)) * scaleX;
+      const renderY = t.screenY * scaleY;
+      const fontSize = t.fontSize || 20;
       const lines = t.value.split('\n');
-      // Calculate starting Y so text is vertically centered in the box
-      let totalHeight = lines.length * (t.fontSize || 20) * 1.2;
-      let startY = t.canvasY + ((t.boxHeight * (ctx.canvas.height / ctx.canvas.width)) - totalHeight) / 2;
       lines.forEach((line, i) => {
-        ctx.fillText(line, t.canvasX, startY + i * (t.fontSize || 20) * 1.2);
+        ctx.fillText(line, renderX, renderY + i * fontSize * 1.2);
       });
       ctx.restore();
       this.placedTexts.splice(idx, 1);
