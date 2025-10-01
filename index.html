@@ -1104,6 +1104,11 @@ new Vue({
       this.textValue = '';
       this.lastTextCanvasX = (x + boxWidth / 2) * scaleX;
       this.lastTextCanvasY = y * scaleY;
+      // Focus the textarea after it appears
+      this.$nextTick(() => {
+        const textarea = document.querySelector('textarea[v-model="textValue"]');
+        if (textarea) textarea.focus();
+      });
     },
     cancelText() {
       this.showTextInput = false;
