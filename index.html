@@ -1023,12 +1023,15 @@ new Vue({
       const ctx = this.$refs.canvas.getContext('2d');
       ctx.save();
       ctx.font = `${t.fontSize || 20}px ${this.selectedFont}`;
-      ctx.fillStyle = "#f5f5e9"; // Offwhite color
+      ctx.fillStyle = "#f5f5e9";
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
       const lines = t.value.split('\n');
+      // Calculate starting Y so text is vertically centered in the box
+      let totalHeight = lines.length * (t.fontSize || 20) * 1.2;
+      let startY = t.canvasY + ((t.boxHeight * (ctx.canvas.height / ctx.canvas.width)) - totalHeight) / 2;
       lines.forEach((line, i) => {
-        ctx.fillText(line, t.canvasX, t.canvasY + i * (t.fontSize || 20) * 1.2);
+        ctx.fillText(line, t.canvasX, startY + i * (t.fontSize || 20) * 1.2);
       });
       ctx.restore();
       this.placedTexts.splice(idx, 1);
