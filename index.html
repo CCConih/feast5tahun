@@ -437,17 +437,18 @@
           <div class="drawing-section">
             <div style="position:relative; width:100%; max-width:720px; margin:0 auto;">
               <canvas ref="canvas"
-                      :class="{pen: pen, eraser: clean}"
-                      @mousedown="startDrawing"
-                      @mousemove="draw"
-                      @mouseup="stopDrawing"
-                      @mouseleave="stopDrawing"
-                      @touchstart="startDrawing"
-                      @touchmove="draw"
-                      @touchend="stopDrawing"
-                      @click="canvasClick"
-                      style="position:relative; z-index:1;">
-              </canvas>
+          :class="{pen: pen, eraser: clean}"
+          @mousedown="startDrawing"
+          @mousemove="draw"
+          @mouseup="stopDrawing"
+          @mouseleave="stopDrawing"
+          @touchstart="startDrawing"
+          @touchmove="draw"
+          @touchend="stopDrawing"
+          @click="canvasClick"
+          @touchstart.native="canvasClick"
+          style="position:relative; z-index:1;">
+        </canvas>
               <!-- Moveable assets (texts, stickers, images) go here -->
               <!-- Render placed stickers for moving -->
               <div v-for="(s, idx) in placedStickers"
@@ -560,6 +561,8 @@
                      textAlign: 'center'
                    }">
                 <textarea v-model="textValue"
+                          id="textInput"
+                          name="textInput"
                           :style="`font-size:20px; background:transparent; resize:none; font-family: ${selectedFont}; text-align:center; color:#f5f5e9;`"
                           rows="3"
                           maxlength="140"></textarea>
