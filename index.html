@@ -1073,6 +1073,7 @@ new Vue({
     },
     canvasClick(e) {
       if (!this.textMode) return;
+      console.log('canvasClick triggered'); // DEBUG
       const canvas = this.$refs.canvas;
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
