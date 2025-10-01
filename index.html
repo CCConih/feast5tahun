@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Feast 0.8.9c</title>
+  <title>Feast 0.9 </title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="./">
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@500&family=Gloria+Hallelujah&family=Caveat:wght@700&display=swap" rel="stylesheet">
@@ -804,7 +804,7 @@ new Vue({
     movingImageIdx: null,
     imageOffsetX: 0,
     imageOffsetY: 0,
-    selectedFont: "'Gloria Hallelujah', cursive",
+  selectedFont: "'Gloria Hallelujah', cursive",
     showStickerPopup: false, // <-- Control sticker popup visibility
     brushImg: src="brushes/charcoal-brush.png", // <-- Add brush image data property
     resizingTextIdx: null,
@@ -900,13 +900,15 @@ new Vue({
         const dx = newX - this.x;
         const dy = newY - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        const steps = Math.max(1, Math.floor(dist / (size * 0.5)));
-        for (let i = 0; i <= steps; i++) {
-          const t = i / steps;
-          const ix = this.x + dx * t;
-          const iy = this.y + dy * t;
-          this.ctx.drawImage(this.brushImg, ix - size / 2, iy - size / 2, size, size);
-        }
+          // Make brush more dense by reducing step size
+          const stepSize = Math.max(1, size * 0.18); // smaller step for more density
+          const steps = Math.max(1, Math.floor(dist / stepSize));
+          for (let i = 0; i <= steps; i++) {
+            const t = i / steps;
+            const ix = this.x + dx * t;
+            const iy = this.y + dy * t;
+            this.ctx.drawImage(this.brushImg, ix - size / 2, iy - size / 2, size, size);
+          }
 
         this.ctx.restore();
       } else {
